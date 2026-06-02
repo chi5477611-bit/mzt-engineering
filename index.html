@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>墨竹亭 工程部 訓練系統</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --ink: #1a1a18;
+    --bamboo: #4a7c59;
+    --bamboo-light: #6aab7c;
+    --bamboo-pale: #e8f3eb;
+    --gold: #c49a3c;
+    --gold-light: #f0d080;
+    --stone: #f5f2ec;
+    --stone-dark: #e8e3d8;
+    --red-accent: #c0392b;
+    --mist: #8a9a8c;
+    --shadow: rgba(26,26,24,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--stone);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--ink);
+    color: white;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    padding: 14px 32px;
+    gap: 20px;
+  }
+  .logo-mark {
+    width: 44px; height: 44px;
+    background: var(--bamboo);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px; font-weight: 900;
+    color: white; flex-shrink: 0;
+  }
+  .header-title { flex: 1; }
+  .header-title h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px; font-weight: 700;
+    letter-spacing: 2px;
+  }
+  .header-title p {
+    font-size: 11px; color: var(--mist);
+    letter-spacing: 3px; margin-top: 2px;
+  }
+  .phase-badge {
+    background: var(--bamboo);
+    color: white;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    background: #111110;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    padding: 12px 22px;
+    color: var(--mist);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .nav-tab:hover { color: white; }
+  .nav-tab.active {
+    color: var(--bamboo-light);
+    border-bottom-color: var(--bamboo-light);
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* SECTION */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* PAGE HEADER */
+  .page-header {
+    margin-bottom: 28px;
+  }
+  .page-header h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 26px; font-weight: 700;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .page-header p {
+    color: var(--mist); font-size: 13px; margin-top: 6px; line-height: 1.6;
+  }
+  .icon-circle {
+    width: 40px; height: 40px;
+    background: var(--bamboo-pale);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  /* CARDS GRID */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 22px;
+    border: 1px solid var(--stone-dark);
+    box-shadow: 0 2px 8px var(--shadow);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .card:hover {
+    box-shadow: 0 6px 20px var(--shadow);
+    transform: translateY(-2px);
+  }
+  .card-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .card-icon {
+    font-size: 22px;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+  }
+  .card-title { font-weight: 700; font-size: 14px; }
+  .card-sub { font-size: 11px; color: var(--mist); margin-top: 1px; }
+  .card-body { font-size: 13px; color: #555; line-height: 1.7; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .tag {
+    font-size: 10px; padding: 3px 9px; border-radius: 20px;
+    font-weight: 500; letter-spacing: 0.5px;
+  }
+  .tag-bamboo { background: var(--bamboo-pale); color: var(--bamboo); }
+  .tag-gold { background: #fdf4de; color: #9a7320; }
+  .tag-red { background: #fdecea; color: var(--red-accent); }
+  .tag-ink { background: #ececec; color: #444; }
+
+  /* TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 10px; top: 0; bottom: 0;
+    width: 2px; background: var(--stone-dark);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+    background: white;
+    border-radius: 10px;
+    padding: 18px 20px;
+    border: 1px solid var(--stone-dark);
+    box-shadow: 0 2px 6px var(--shadow);
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute; left: -23px; top: 20px;
+    width: 12px; height: 12px;
+    border-radius: 50%; border: 2px solid white;
+    background: var(--bamboo);
+    box-shadow: 0 0 0 2px var(--bamboo);
+  }
+  .timeline-phase {
+    font-size: 10px; letter-spacing: 2px; font-weight: 700;
+    color: var(--bamboo); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .timeline-title {
+    font-weight: 700; font-size: 15px; margin-bottom: 8px;
+  }
+  .timeline-items { font-size: 13px; color: #555; }
+  .timeline-items li { padding: 3px 0; }
+
+  /* CHECKLIST SECTION */
+  .checklist-group { margin-bottom: 24px; }
+  .checklist-group-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px; font-weight: 700;
+    padding: 10px 16px;
+    background: var(--bamboo);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .checklist-items {
+    background: white;
+    border: 1px solid var(--stone-dark);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+  }
+  .checklist-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--stone-dark);
+    font-size: 13px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .checklist-item:hover { background: var(--bamboo-pale); }
+  .checklist-item input[type=checkbox] {
+    margin-top: 1px; flex-shrink: 0;
+    accent-color: var(--bamboo);
+    width: 16px; height: 16px; cursor: pointer;
+  }
+  .checklist-item.checked .item-text {
+    text-decoration: line-through; color: var(--mist);
+  }
+  .item-text { flex: 1; line-height: 1.5; }
+  .item-owner {
+    font-size: 10px; color: var(--mist);
+    background: var(--stone); padding: 2px 8px; border-radius: 10px;
+    white-space: nowrap; align-self: center;
+  }
+
+  /* EQUIPMENT TABLE */
+  .eq-table {
+    width: 100%; border-collapse: collapse;
+    background: white; border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px var(--shadow);
+    font-size: 13px; margin-bottom: 20px;
+  }
+  .eq-table thead { background: var(--ink); color: white; }
+  .eq-table th {
+    padding: 12px 14px; text-align: left;
+    font-size: 11px; letter-spacing: 1px; font-weight: 600;
+  }
+  .eq-table td { padding: 10px 14px; border-bottom: 1px solid var(--stone-dark); }
+  .eq-table tr:last-child td { border-bottom: none; }
+  .eq-table tr:hover td { background: var(--bamboo-pale); }
+  .eq-zone {
+    font-size: 10px; padding: 2px 8px; border-radius: 10px;
+    font-weight: 600;
+  }
+  .zone-stove { background: #fdecea; color: #c0392b; }
+  .zone-bar { background: #e8f0fe; color: #1a56cc; }
+  .zone-output { background: var(--bamboo-pale); color: var(--bamboo); }
+  .zone-cold { background: #e8f3fb; color: #1a7aaa; }
+
+  /* QUIZ */
+  .quiz-card {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    border: 1px solid var(--stone-dark);
+    box-shadow: 0 2px 8px var(--shadow);
+    margin-bottom: 20px;
+  }
+  .quiz-q {
+    font-size: 16px; font-weight: 700;
+    margin-bottom: 18px; line-height: 1.5;
+  }
+  .quiz-q .q-num {
+    display: inline-block;
+    width: 28px; height: 28px; line-height: 28px;
+    text-align: center; border-radius: 50%;
+    background: var(--bamboo); color: white;
+    font-size: 13px; font-weight: 700;
+    margin-right: 10px; flex-shrink: 0;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    padding: 12px 16px;
+    border: 2px solid var(--stone-dark);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .quiz-opt:hover { border-color: var(--bamboo); background: var(--bamboo-pale); }
+  .quiz-opt.correct { border-color: var(--bamboo); background: var(--bamboo-pale); color: var(--bamboo); font-weight: 700; }
+  .quiz-opt.wrong { border-color: var(--red-accent); background: #fdecea; color: var(--red-accent); }
+  .quiz-opt.disabled { cursor: default; }
+  .opt-letter {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--stone); display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .quiz-feedback {
+    margin-top: 12px; padding: 12px 16px;
+    border-radius: 8px; font-size: 13px; line-height: 1.6;
+    display: none;
+  }
+  .feedback-correct { background: var(--bamboo-pale); color: var(--bamboo); border-left: 4px solid var(--bamboo); }
+  .feedback-wrong { background: #fdecea; color: var(--red-accent); border-left: 4px solid var(--red-accent); }
+  .quiz-score {
+    text-align: center; padding: 24px;
+    background: white; border-radius: 12px;
+    border: 2px dashed var(--bamboo);
+    margin-bottom: 20px;
+  }
+  .quiz-score .score-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 48px; font-weight: 700; color: var(--bamboo);
+  }
+  .quiz-btn {
+    background: var(--bamboo); color: white;
+    border: none; padding: 12px 28px;
+    border-radius: 8px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Noto Sans TC', sans-serif;
+    transition: background 0.2s;
+  }
+  .quiz-btn:hover { background: var(--bamboo-light); }
+
+  /* FLOW DIAGRAM */
+  .flow-wrap {
+    background: white; border-radius: 12px;
+    padding: 24px; border: 1px solid var(--stone-dark);
+    box-shadow: 0 2px 8px var(--shadow);
+    overflow-x: auto;
+    margin-bottom: 20px;
+  }
+  .flow {
+    display: flex; align-items: flex-start; gap: 0;
+    min-width: 700px;
+  }
+  .flow-step {
+    flex: 1; text-align: center; position: relative;
+  }
+  .flow-step::after {
+    content: '→';
+    position: absolute; right: -10px; top: 16px;
+    font-size: 18px; color: var(--bamboo); z-index:1;
+  }
+  .flow-step:last-child::after { display: none; }
+  .flow-node {
+    margin: 0 16px;
+    background: var(--bamboo-pale);
+    border: 2px solid var(--bamboo);
+    border-radius: 10px;
+    padding: 14px 10px;
+  }
+  .flow-node.highlight {
+    background: var(--bamboo); color: white;
+  }
+  .flow-phase {
+    font-size: 10px; letter-spacing: 1px; font-weight: 700;
+    color: var(--bamboo); text-transform: uppercase; margin-bottom: 4px;
+  }
+  .flow-node.highlight .flow-phase { color: rgba(255,255,255,0.8); }
+  .flow-name { font-size: 13px; font-weight: 700; }
+  .flow-date { font-size: 10px; color: var(--mist); margin-top: 4px; }
+  .flow-node.highlight .flow-date { color: rgba(255,255,255,0.7); }
+  .flow-items { font-size: 10px; color: #777; margin-top: 6px; line-height: 1.5; }
+  .flow-node.highlight .flow-items { color: rgba(255,255,255,0.85); }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex; gap: 16px; margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    flex: 1; min-width: 140px;
+    background: white; border-radius: 10px;
+    padding: 16px 20px;
+    border: 1px solid var(--stone-dark);
+    box-shadow: 0 2px 6px var(--shadow);
+  }
+  .stat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 28px; font-weight: 700; color: var(--bamboo);
+    line-height: 1;
+  }
+  .stat-label { font-size: 11px; color: var(--mist); margin-top: 4px; letter-spacing: 0.5px; }
+
+  /* PROGRESS TRACKER */
+  .progress-bar-wrap { margin: 8px 0; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #555; margin-bottom: 4px; }
+  .progress-bar { height: 8px; background: var(--stone-dark); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--bamboo); border-radius: 4px; transition: width 0.5s ease; }
+  .progress-fill.gold { background: var(--gold); }
+  .progress-fill.red { background: var(--red-accent); }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--stone-dark); margin: 24px 0; }
+
+  /* SCROLLABLE TABLE WRAP */
+  .table-wrap { overflow-x: auto; }
+
+  /* ACCORDION */
+  .accordion { margin-bottom: 12px; }
+  .accordion-header {
+    background: white; border: 1px solid var(--stone-dark);
+    border-radius: 8px; padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; font-weight: 600; font-size: 14px;
+    transition: background 0.15s;
+  }
+  .accordion-header:hover { background: var(--bamboo-pale); }
+  .accordion-header.open { border-radius: 8px 8px 0 0; border-bottom: none; background: var(--bamboo-pale); }
+  .accordion-body {
+    background: white; border: 1px solid var(--stone-dark);
+    border-top: none; border-radius: 0 0 8px 8px;
+    padding: 16px 18px; font-size: 13px; line-height: 1.8;
+    display: none; color: #444;
+  }
+  .accordion-body.open { display: block; }
+  .accordion-arrow { font-size: 12px; color: var(--mist); transition: transform 0.2s; }
+  .accordion-header.open .accordion-arrow { transform: rotate(180deg); }
+
+  /* GLOSSARY */
+  .glossary-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .glossary-card {
+    background: white; border-radius: 10px; padding: 16px;
+    border: 1px solid var(--stone-dark); font-size: 13px;
+  }
+  .glossary-term { font-weight: 700; font-size: 14px; color: var(--bamboo); margin-bottom: 4px; }
+  .glossary-def { color: #555; line-height: 1.6; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .main { padding: 20px 16px; }
+    .header-inner { padding: 12px 16px; }
+    .flow { min-width: 600px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-mark">竹</div>
+    <div class="header-title">
+      <h1>墨竹亭 工程部 訓練系統</h1>
+      <p>ENGINEERING DEPARTMENT · TRAINING PLATFORM</p>
+    </div>
+    <div class="phase-badge">v1.0 初版</div>
+  </div>
+  <nav class="nav-tabs">
+    <div class="nav-tab active" onclick="showSection('overview')">🏠 總覽</div>
+    <div class="nav-tab" onclick="showSection('workflow')">📋 作業流程</div>
+    <div class="nav-tab" onclick="showSection('checklist')">✅ 工程檢核表</div>
+    <div class="nav-tab" onclick="showSection('equipment')">🍳 廚區設備</div>
+    <div class="nav-tab" onclick="showSection('schedule')">📅 進度管理</div>
+    <div class="nav-tab" onclick="showSection('knowledge')">📚 知識庫</div>
+    <div class="nav-tab" onclick="showSection('quiz')">📝 測驗考核</div>
+  </nav>
+</header>
+
+<div class="main">
+
+  <!-- ====== OVERVIEW ====== -->
+  <section class="section active" id="overview">
+    <div class="page-header">
+      <h2><div class="icon-circle">🏢</div>工程部訓練系統 — 總覽</h2>
+      <p>本系統依據墨竹亭現有工程資料建立，涵蓋加盟店從選址到開幕的完整工程流程訓練。</p>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-num">7</div>
+        <div class="stat-label">工程作業階段</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">28</div>
+        <div class="stat-label">工程進度項目</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">22+</div>
+        <div class="stat-label">廚區設備規格</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">5</div>
+        <div class="stat-label">檢核表階段</div>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:#e8f3eb;">🎯</div>
+          <div><div class="card-title">訓練目標</div><div class="card-sub">新進工程部人員</div></div>
+        </div>
+        <div class="card-body">使新進工程同仁能獨立完成加盟店從選址評估、施工協調、設備確認到開幕驗收的全流程工作。</div>
+        <div class="card-tags">
+          <span class="tag tag-bamboo">選址評估</span>
+          <span class="tag tag-bamboo">施工管理</span>
+          <span class="tag tag-bamboo">設備驗收</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:#fdf4de;">📐</div>
+          <div><div class="card-title">核心職責</div><div class="card-sub">工程部日常工作</div></div>
+        </div>
+        <div class="card-body">工程協調會場勘、廚區動線規劃、圖面審查確認、工程行程表管理、廠商報價審核、施工巡檢追蹤。</div>
+        <div class="card-tags">
+          <span class="tag tag-gold">場勘</span>
+          <span class="tag tag-gold">協調</span>
+          <span class="tag tag-gold">巡檢</span>
+          <span class="tag tag-gold">驗收</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:#fdecea;">⚠️</div>
+          <div><div class="card-title">關鍵注意事項</div><div class="card-sub">現場必知重點</div></div>
+        </div>
+        <div class="card-body">電力需達100A以上；面寬6尺以下廚房受限；有拆除費用需事先告知加盟主；壁癌、漏水問題需提前處理並說明費用。</div>
+        <div class="card-tags">
+          <span class="tag tag-red">電力100A</span>
+          <span class="tag tag-red">費用告知</span>
+          <span class="tag tag-red">壁癌處理</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:#e8f3eb;">📁</div>
+          <div><div class="card-title">現有文件資料</div><div class="card-sub">訓練素材來源</div></div>
+        </div>
+        <div class="card-body">廚區模組規格表、工程檢核表（施工前/施工前中/客席區/廚區）、施工圖（內湖店範本）、工程進度甘特表。</div>
+        <div class="card-tags">
+          <span class="tag tag-ink">規格表</span>
+          <span class="tag tag-ink">檢核表</span>
+          <span class="tag tag-ink">施工圖</span>
+          <span class="tag tag-ink">甘特表</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:#fdf4de;">🗓️</div>
+          <div><div class="card-title">典型工程週期</div><div class="card-sub">以瑞光店為範本</div></div>
+        </div>
+        <div class="card-body">約 2 個月（8-9週）完工。從拆除工程、水電配管、木作裝修，到餐設安裝、軟裝進場，最後清潔驗收。</div>
+        <div class="card-tags">
+          <span class="tag tag-gold">約8-9週</span>
+          <span class="tag tag-gold">28個項目</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:#e8f3eb;">🎓</div>
+          <div><div class="card-title">訓練路徑建議</div><div class="card-sub">新人上手順序</div></div>
+        </div>
+        <div class="card-body">建議順序：① 熟讀作業流程 → ② 實際演練檢核表 → ③ 背熟設備規格 → ④ 學習進度管理 → ⑤ 完成測驗考核。</div>
+        <div class="card-tags">
+          <span class="tag tag-bamboo">循序漸進</span>
+          <span class="tag tag-bamboo">實務導向</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-wrap">
+      <h3 style="font-family:'Noto Serif TC',serif;font-size:16px;margin-bottom:18px;color:var(--ink);">▎ 加盟店工程全流程 一覽</h3>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-node">
+            <div class="flow-phase">Phase 1</div>
+            <div class="flow-name">選址評估</div>
+            <div class="flow-items">商圈評估<br>電力/地板/天花板<br>面寬確認<br>費用溝通</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-node">
+            <div class="flow-phase">Phase 2</div>
+            <div class="flow-name">初期規劃</div>
+            <div class="flow-items">工程協調會<br>廚區動線規劃<br>施工圖確認<br>廠商報價</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-node highlight">
+            <div class="flow-phase">Phase 3</div>
+            <div class="flow-name">施工執行</div>
+            <div class="flow-items">拆除→水電<br>木作→冷氣<br>油漆→餐設<br>軟裝→清潔</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-node">
+            <div class="flow-phase">Phase 4</div>
+            <div class="flow-name">驗收開幕</div>
+            <div class="flow-items">全區驗收<br>POS設備<br>試營運準備<br>總部到店</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== WORKFLOW ====== -->
+  <section class="section" id="workflow">
+    <div class="page-header">
+      <h2><div class="icon-circle">📋</div>工程作業流程 SOP</h2>
+      <p>新進工程人員必須熟記的標準作業程序，依時間序列排列。</p>
+    </div>
+
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 1 · 尋點選址</div>
+        <div class="timeline-title">🔍 現場場勘評估（開工前）</div>
+        <ul class="timeline-items">
+          <li>✦ 商圈評估：人流、競品分析</li>
+          <li>✦ 天花板：是否需拆除，確認風格（輕鋼架 or 工業風）</li>
+          <li>✦ 漏水確認：天花板是否有漏水問題</li>
+          <li>✦ 地板狀況：是否有隆起、是否有地排及管徑</li>
+          <li>✦ 面寬確認：6尺以下需評估廚房位置，左右是否可拆</li>
+          <li>✦ 壁癌：有則需處理，須告知費用</li>
+          <li>✦ <strong style="color:var(--red-accent)">電力容量：必須達100A以上</strong></li>
+          <li>✦ 所有需花費項目，皆須事先與加盟主溝通說明</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 2 · 初期規劃</div>
+        <div class="timeline-title">📐 工程規劃與設計確認</div>
+        <ul class="timeline-items">
+          <li>✦ 工程協調會：現場場勘確認</li>
+          <li>✦ 廚區動線規劃會議</li>
+          <li>✦ 委託貳仁房出室內空間施工圖</li>
+          <li>✦ 墨比斯出平面廣告設計圖</li>
+          <li>✦ 圖面審查確認（工程部把關）</li>
+          <li>✦ 建立工程行程表（甘特圖）</li>
+          <li>✦ 廠商報價單彙整審核</li>
+          <li>✦ 工程開工、張貼裝潢期徵人布條</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 3 · 外場規劃確認</div>
+        <div class="timeline-title">🏪 外場設計要點</div>
+        <ul class="timeline-items">
+          <li>✦ 招牌位置能見度確認</li>
+          <li>✦ 騎樓規劃與照明設計</li>
+          <li>✦ 2個燈箱擺放位置</li>
+          <li>✦ 大門設計 / 門口隔柵</li>
+          <li>✦ 壁畫、座位安排、天花板設計</li>
+          <li>✦ 外場插座 / 照明 / 冷氣管路規劃</li>
+          <li>✦ 醬料台、撤餐動線規劃</li>
+          <li>✦ 櫃台規劃（含插座、網路線）</li>
+          <li>✦ LOGO位置、小菜櫃、布簾設計</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 4 · 內場規劃確認</div>
+        <div class="timeline-title">🍜 內場 / 廚區設計要點</div>
+        <ul class="timeline-items">
+          <li>✦ 餐設擺放位置（管路和線路走法）</li>
+          <li>✦ 管路確認（明管為主）</li>
+          <li>✦ 插座 / 網路 / 線路路徑設計</li>
+          <li>✦ 廁所決策（開放/不開放，原貌/整修）</li>
+          <li>✦ 地板確認（原貌/水泥/地磚）</li>
+          <li>✦ 電燈高度 / 天花板 / 牆壁風格</li>
+          <li>✦ 瓦斯確認（桶裝或天然氣）</li>
+          <li>✦ 冷氣管路路徑 / 抽風靜電機</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 5 · 施工執行</div>
+        <div class="timeline-title">🔨 施工期間管理</div>
+        <ul class="timeline-items">
+          <li>✦ 預算初估確認</li>
+          <li>✦ 安排工程巡檢時間（定期到場）</li>
+          <li>✦ 每週工程進度追蹤（更新甘特表）</li>
+          <li>✦ 訂購監視器（提前規劃安裝）</li>
+          <li>✦ 施工順序：拆除→水電→打矽板→迷作→木作/疊工→玻璃→冷氣→油漆→餐設→軟裝→清潔</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 6 · 開幕驗收</div>
+        <div class="timeline-title">✅ 開幕前全面驗收</div>
+        <ul class="timeline-items">
+          <li>✦ 客席區全項目驗收（燈具、冷氣、監視器、招牌）</li>
+          <li>✦ 廚區驗收（瓦斯、抽風、設備運作測試）</li>
+          <li>✦ POS設備安裝確認</li>
+          <li>✦ 總部督導第一次到店確認</li>
+          <li>✦ 負責人（夥伴）第一次到店確認</li>
+          <li>✦ 試清潔（前次）→ 交屋清潔（開幕前）</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====== CHECKLIST ====== -->
+  <section class="section" id="checklist">
+    <div class="page-header">
+      <h2><div class="icon-circle">✅</div>工程檢核表 — 互動版</h2>
+      <p>依據實際工程檢核表建立，可勾選追蹤完成狀態。此為訓練用範本，實際使用請配合現場更新。</p>
+    </div>
+
+    <div class="checklist-group">
+      <div class="checklist-group-title">🔍 施工前 — 尋點評估</div>
+      <div class="checklist-items" id="cl-group-1">
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">商圈評估完成</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">檢視天花板是否須拆除</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">拆除後裝潢風格確認（輕鋼架 or 工業風）</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">天花板是否有漏水</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">地板狀況確認（是否隆起）</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">地排確認（排水位置和管徑）</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">面寬確認（6尺以下是否可拆）</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">拆除費用已告知加盟主</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">壁癌確認及處理費用告知</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">電力設備確認（100A以上）</span><span class="item-owner">工程部</span></div>
+      </div>
+    </div>
+
+    <div class="checklist-group">
+      <div class="checklist-group-title">📐 施工前 — 初期規劃</div>
+      <div class="checklist-items">
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">工程協調會現場場勘</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">廚區動線規劃會議</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">貳仁房室內空間施工圖出圖</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">墨比斯平面廣告設計圖</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">圖面審查確認</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">工程行程表建立</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">廠商報價單彙整</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">工程開工</span><span class="item-owner">工程部</span></div>
+      </div>
+    </div>
+
+    <div class="checklist-group">
+      <div class="checklist-group-title">🏪 外場 — 設計確認</div>
+      <div class="checklist-items">
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">招牌擺放位置能見度確認</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">騎樓規劃和照明</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">2個燈箱擺放位置確認</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">大門設計 / 門口隔柵</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">外場插座和照明規劃</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">冷氣安裝管路路徑規劃</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">醬料台擺放位置</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">電箱位置及電力充足確認</span><span class="item-owner">工程部</span></div>
+      </div>
+    </div>
+
+    <div class="checklist-group">
+      <div class="checklist-group-title">🍜 客席區 — 開幕前驗收</div>
+      <div class="checklist-items">
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">網路正常運作</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">冷氣正常運作</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">監視器安裝完成</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">音響運作正常</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">直招招牌有亮</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">橫招招牌有亮</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">騎樓燈有亮</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">燃麵燈片有亮</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">菜單燈片有亮</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">自動門正常運作</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">風鳴器正常運作</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">插座通電確認</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">客席區燈具有亮</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">玻璃門廣告三宮格安裝</span><span class="item-owner">工程部</span></div>
+      </div>
+    </div>
+
+    <div class="checklist-group">
+      <div class="checklist-group-title">🔥 廚區 — 設備驗收</div>
+      <div class="checklist-items">
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">瓦斯管線安裝完成</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">抽風機運作正常</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">油炸機運作正常</span><span class="item-owner">工程部</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="item-text">麵檯運作正常</span><span class="item-owner">工程部</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== EQUIPMENT ====== -->
+  <section class="section" id="equipment">
+    <div class="page-header">
+      <h2><div class="icon-circle">🍳</div>廚區模組設備規格</div></h2>
+      <p>墨竹亭標準廚區模組設備清單，工程人員需熟悉各設備規格，以利水電配置與驗收確認。</p>
+    </div>
+
+    <div class="table-wrap">
+      <table class="eq-table">
+        <thead>
+          <tr>
+            <th>區域</th><th>項次</th><th>品名</th><th>尺寸 (cm)</th><th>電壓</th><th>安培</th><th>備註</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>1</td><td>六口西餐爐</td><td>120/80/90</td><td>—</td><td>—</td><td>桶裝/天然瓦斯</td></tr>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>2</td><td>六切一湯煮麵機</td><td>100/70/90</td><td>—</td><td>—</td><td>瓦斯管+5cm</td></tr>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>3</td><td>洗麵檯</td><td>30/80/90</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>4</td><td>30cm三層工作台</td><td>30/80/90</td><td>—</td><td>—</td><td>麵檯跟爐檯中間</td></tr>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>5</td><td>單口水槽</td><td>62/60/90</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>6</td><td>八道計時器</td><td>—</td><td>110V</td><td>—</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>7</td><td>2米3排風罩</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>8</td><td>2HP中壓抽風馬達</td><td>—</td><td>220V專迴</td><td>6A</td><td>需獨立迴路</td></tr>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>9</td><td>12#布織布管</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>10</td><td>風車腳架</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>11</td><td>不鏽鋼壁板</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-stove">爐檯區</span></td><td>12</td><td>防爆燈</td><td>—</td><td>—</td><td>2A</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-output">出餐檯</span></td><td>1</td><td>6尺工作檯冰箱含上架</td><td>180/60/80</td><td>220V</td><td>6A</td><td>上架+90cm</td></tr>
+          <tr><td><span class="eq-zone zone-output">出餐檯</span></td><td>2</td><td>四格電子保溫魯桶</td><td>43/43/30</td><td>110V/220V</td><td>—</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-output">出餐檯</span></td><td>3</td><td>澳柯瑪桌上型冷藏冰箱</td><td>47/54/82</td><td>110V</td><td>6A</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-output">出餐檯</span></td><td>4</td><td>8L桌上油炸機</td><td>44/27/16</td><td>110V</td><td>3.6A</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-bar">水吧&洗滌</span></td><td>1</td><td>20加侖開水機</td><td>45/45</td><td>220V專迴</td><td>18A</td><td>需獨立迴路</td></tr>
+          <tr><td><span class="eq-zone zone-bar">水吧&洗滌</span></td><td>2</td><td>5尺三層工作檯</td><td>150/60/90</td><td>—</td><td>—</td><td>水吧工作檯</td></tr>
+          <tr><td><span class="eq-zone zone-bar">水吧&洗滌</span></td><td>3</td><td>三口水槽</td><td>180/60/90</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-bar">水吧&洗滌</span></td><td>7</td><td>封口機</td><td>24/31/63</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td><span class="eq-zone zone-cold">冷藏備料</span></td><td>1</td><td>四門白鐵半凍藏冰箱</td><td>118/76/203</td><td>220V</td><td>8A</td><td>數量：1</td></tr>
+          <tr><td><span class="eq-zone zone-cold">冷藏備料</span></td><td>2</td><td>四門白鐵全藏冰箱</td><td>118/76/203</td><td>110V/220V</td><td>6A</td><td>數量：1</td></tr>
+          <tr><td><span class="eq-zone zone-cold">冷藏備料</span></td><td>3</td><td>三尺一上掀冰箱</td><td>94/56/91</td><td>110V</td><td>4A</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:#fdecea;">⚡</div>
+          <div><div class="card-title">電力重點確認</div><div class="card-sub">需獨立迴路設備</div></div>
+        </div>
+        <div class="card-body">
+          <strong>220V 專迴（需獨立迴路）：</strong><br>
+          • 2HP 中壓抽風馬達（220V / 6A）<br>
+          • 20加侖開水機（220V / 18A）<br><br>
+          <strong>總電力需求：</strong>確保電箱容量 100A 以上，220V 設備需事先規劃專迴位置。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:#e8f3eb;">🔧</div>
+          <div><div class="card-title">施工項目</div><div class="card-sub">廚區配套工程</div></div>
+        </div>
+        <div class="card-body">
+          1. 洗洞（管路穿牆）<br>
+          2. 二次配電（廚區電力分配）<br>
+          3. 瓦斯配管（桶裝或天然氣）<br>
+          4. 截油槽安裝（廚房廢水處理）<br><br>
+          以上為廚區開工前必須確認的配套施工項目。
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <h3 style="font-family:'Noto Serif TC',serif;font-size:16px;margin-bottom:16px;">▎ 電力配置練習題</h3>
+    <div class="card" style="background:var(--bamboo-pale);border-color:var(--bamboo);">
+      <p style="font-size:13px;line-height:1.8;color:#333;">
+        <strong>情境練習：</strong>新加盟主的店面原有電容量為 60A，水電師傅說不需要升級。作為工程部人員，你應該如何處理？<br><br>
+        <strong style="color:var(--red-accent);">正確做法：</strong>必須要求升級至 100A 以上。因為廚區設備（抽風馬達6A + 開水機18A + 各冰箱設備）合計用電量大，加上照明及其他設備，60A 電容量遠遠不足，且有安全隱患。應明確告知加盟主需升級電力，並說明費用。
+      </p>
+    </div>
+  </section>
+
+  <!-- ====== SCHEDULE ====== -->
+  <section class="section" id="schedule">
+    <div class="page-header">
+      <h2><div class="icon-circle">📅</div>工程進度管理</h2>
+      <p>以墨竹亭瑞光店工程時程表為範本，學習如何建立和管理工程甘特表。</p>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:#e8f3eb;">📊</div>
+          <div><div class="card-title">甘特表管理原則</div></div>
+        </div>
+        <div class="card-body">
+          • 每週更新一次進度<br>
+          • 標記「會勘」等關鍵節點<br>
+          • 顏色區分不同工種<br>
+          • 預留緩衝時間（5-7天）<br>
+          • 延誤項目立即通報
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:#fdf4de;">⏱️</div>
+          <div><div class="card-title">典型工程週期</div><div class="card-sub">瑞光店實績參考</div></div>
+        </div>
+        <div class="card-body">
+          開工：2/26（拆除）<br>
+          完工：4/30（清潔交屋）<br>
+          <strong>總計：約 9 週（64天）</strong><br><br>
+          注意：進度表中有2個會勘節點（水電期、餐設期）
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:'Noto Serif TC',serif;font-size:16px;margin-bottom:16px;">▎ 28項工程進度項目</h3>
+
+    <div class="table-wrap">
+      <table class="eq-table">
+        <thead>
+          <tr><th>#</th><th>項目</th><th>工程類型</th><th>重點說明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>總部場勘</td><td><span class="tag tag-bamboo">前置</span></td><td>工程部現場評估確認</td></tr>
+          <tr><td>2</td><td>拆除工程</td><td><span class="tag tag-red">拆除</span></td><td>天花板/隔間拆除，費用需事先告知</td></tr>
+          <tr><td>3</td><td>平電配置確認</td><td><span class="tag tag-gold">確認</span></td><td>會勘確認電力配置方案</td></tr>
+          <tr><td>4</td><td>施工圖完成</td><td><span class="tag tag-gold">確認</span></td><td>貳仁房圖面出圖並審查</td></tr>
+          <tr><td>5</td><td>工程協調會</td><td><span class="tag tag-bamboo">協調</span></td><td>各廠商協調施工順序</td></tr>
+          <tr><td>6</td><td>平電配置完成</td><td><span class="tag tag-gold">確認</span></td><td>電力配置施工完成確認</td></tr>
+          <tr><td>7</td><td>水電（廚排）</td><td><span class="tag tag-ink">水電</span></td><td>廚房水電配管（含會勘節點）</td></tr>
+          <tr><td>8</td><td>打矽板</td><td><span class="tag tag-ink">裝修</span></td><td>隔音/防潮矽板施工</td></tr>
+          <tr><td>9</td><td>迷作</td><td><span class="tag tag-ink">裝修</span></td><td>基礎泥作工程</td></tr>
+          <tr><td>10</td><td>木作/疊工</td><td><span class="tag tag-ink">裝修</span></td><td>木作裝修及疊砌工程</td></tr>
+          <tr><td>11</td><td>玻璃</td><td><span class="tag tag-ink">裝修</span></td><td>玻璃門窗安裝</td></tr>
+          <tr><td>12</td><td>冷氣安裝</td><td><span class="tag tag-ink">機電</span></td><td>冷氣設備安裝</td></tr>
+          <tr><td>13</td><td>油漆</td><td><span class="tag tag-ink">裝修</span></td><td>牆面油漆工程</td></tr>
+          <tr><td>14</td><td>餐設設備</td><td><span class="tag tag-bamboo">設備</span></td><td>廚房設備進場安裝（含會勘節點）</td></tr>
+          <tr><td>15</td><td>招牌安裝</td><td><span class="tag tag-ink">裝修</span></td><td>外場招牌燈箱安裝</td></tr>
+          <tr><td>16</td><td>地板工程</td><td><span class="tag tag-ink">裝修</span></td><td>地板鋪設或處理</td></tr>
+          <tr><td>17</td><td>金屬安裝</td><td><span class="tag tag-ink">裝修</span></td><td>不鏽鋼及金屬配件</td></tr>
+          <tr><td>18</td><td>清潔（前置）</td><td><span class="tag tag-gold">清潔</span></td><td>第一次工程後清潔</td></tr>
+          <tr><td>19</td><td>交場</td><td><span class="tag tag-bamboo">驗收</span></td><td>場地交付加盟主確認</td></tr>
+          <tr><td>20</td><td>清潔（開二）</td><td><span class="tag tag-gold">清潔</span></td><td>開幕前最終清潔</td></tr>
+          <tr><td>21</td><td>餐具組織</td><td><span class="tag tag-bamboo">開幕</span></td><td>餐具擺設組織</td></tr>
+          <tr><td>22</td><td>POS設備</td><td><span class="tag tag-bamboo">設備</span></td><td>POS系統安裝設定</td></tr>
+          <tr><td>23</td><td>總部第一次到店</td><td><span class="tag tag-bamboo">驗收</span></td><td>督導確認驗收</td></tr>
+          <tr><td>24</td><td>夥伴第一次到店</td><td><span class="tag tag-bamboo">驗收</span></td><td>加盟主確認接手</td></tr>
+          <tr><td>25</td><td>備料</td><td><span class="tag tag-bamboo">開幕</span></td><td>食材備料進場</td></tr>
+          <tr><td>26</td><td>家庭日</td><td><span class="tag tag-bamboo">開幕</span></td><td>員工內部試餐</td></tr>
+          <tr><td>27</td><td>圍觀日</td><td><span class="tag tag-bamboo">開幕</span></td><td>小範圍試營運</td></tr>
+          <tr><td>28</td><td>總部到店日</td><td><span class="tag tag-bamboo">開幕</span></td><td>正式開幕確認</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:8px;">
+      <div class="card-header">
+        <div class="card-icon" style="background:#fdecea;">🚨</div>
+        <div><div class="card-title">進度落後的處理原則</div></div>
+      </div>
+      <div class="card-body">
+        <strong>判斷標準：</strong>任何項目落後超過 3 天，即視為需要處置。<br><br>
+        <strong>處理步驟：</strong><br>
+        ① 確認落後原因（廠商/材料/設計問題）<br>
+        ② 評估對後續工項的影響<br>
+        ③ 協調廠商趕工或調整施工順序<br>
+        ④ 更新甘特表並回報主管<br>
+        ⑤ 通知加盟主（若影響開幕日期）
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== KNOWLEDGE ====== -->
+  <section class="section" id="knowledge">
+    <div class="page-header">
+      <h2><div class="icon-circle">📚</div>知識庫 — 常見問題與術語</h2>
+      <p>工程部必備知識，包含常見施工問題、專業術語解說及廠商協調要點。</p>
+    </div>
+
+    <h3 style="font-family:'Noto Serif TC',serif;font-size:16px;margin-bottom:14px;">▎ 常見問題 FAQ</h3>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Q：加盟主的店面電容量只有 60A，該怎麼辦？ <span class="accordion-arrow">▼</span>
+      </div>
+      <div class="accordion-body">
+        必須要求升級至 100A 以上，這是開店的基本門檻。工程部需要：① 告知加盟主需要升電的原因（列舉廚區主要耗電設備），② 說明升電費用由加盟主負擔，③ 協助聯繫台電或電力廠商辦理，④ 在施工圖上標示新的電箱位置。切勿讓施工在電力不足的情況下開始。
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Q：店面有嚴重壁癌，加盟主說不想花錢處理，如何應對？ <span class="accordion-arrow">▼</span>
+      </div>
+      <div class="accordion-body">
+        壁癌若不處理，後期裝修效果會受影響，且可能影響食品安全（潮濕發霉）。工程部的立場：① 說明壁癌的危害，② 提供處理費用估算，③ 明確告知若不處理可能導致的後果，④ 用書面方式記錄加盟主的決定（若堅持不處理）。最終以加盟主意願為準，但必須書面留存，以免後期產生爭議。
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Q：廚房面寬不到 6 尺，廚房設備放不下怎麼辦？ <span class="accordion-arrow">▼</span>
+      </div>
+      <div class="accordion-body">
+        面寬不足時，優先評估兩側是否可拆除牆面。若不可拆，廚房只能設置在後方。此時需要重新規劃廚區動線，注意：① 廚房位於後方會影響出餐動線，② 需重新計算設備擺放順序，③ 可能需要縮減部分設備或調整尺寸，④ 必須在協調會中確認最終方案並獲得加盟主同意。
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Q：瓦斯要用桶裝還是天然氣？如何確認？ <span class="accordion-arrow">▼</span>
+      </div>
+      <div class="accordion-body">
+        確認步驟：① 詢問房東或查看現有設施，② 確認當地是否有天然氣管線供應，③ 若有天然氣，評估安裝費用及申請時間，④ 若使用桶裝，確認放置位置（需在通風處）及補充頻率。墨竹亭廚區設備（西餐爐、煮麵機）均標示「桶裝/天然」，即兩種都可使用，但需事先確認並在施工圖中標明。
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Q：廠商說工期要延誤 2 週，如何處理？ <span class="accordion-arrow">▼</span>
+      </div>
+      <div class="accordion-body">
+        處理流程：① 立即確認延誤原因（材料缺貨/人員問題/設計變更），② 評估是否可分段施工或調整工序，③ 確認對後續工項的連帶影響，④ 與廠商協商是否可加派人手縮短時程，⑤ 更新甘特表重新規劃，⑥ 向主管報告，⑦ 視影響程度決定是否需通知加盟主。處理原則：先找解決方案，再報告問題。
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Q：開水機（20加侖）為何需要「專迴」？ <span class="accordion-arrow">▼</span>
+      </div>
+      <div class="accordion-body">
+        開水機用電量達 220V / 18A，屬於大功率設備。若與其他設備共用同一迴路，可能導致跳電或電線過熱（火災風險）。「220V專迴」的意思是：① 從電箱拉一條專屬的 220V 迴路，② 只供開水機使用，③ 不與其他設備共用。同樣地，抽風馬達也需要 220V 專迴。這些都必須在水電配置圖上明確標示。
+      </div>
+    </div>
+
+    <hr class="divider">
+    <h3 style="font-family:'Noto Serif TC',serif;font-size:16px;margin-bottom:14px;">▎ 專業術語解說</h3>
+
+    <div class="glossary-grid">
+      <div class="glossary-card">
+        <div class="glossary-term">截油槽</div>
+        <div class="glossary-def">廚房廢水排放前的油脂分離設備，將油水分離以避免阻塞下水道，多數縣市有法規強制要求。</div>
+      </div>
+      <div class="glossary-card">
+        <div class="glossary-term">二次配電</div>
+        <div class="glossary-def">從電箱（主配電盤）將電力分配到各設備的配線工程，包括各迴路的拉線及開關設置。</div>
+      </div>
+      <div class="glossary-card">
+        <div class="glossary-term">靜電機</div>
+        <div class="glossary-def">安裝在抽風管路上，用以過濾油煙中的油脂微粒，減少廢氣中的油煙排放量。</div>
+      </div>
+      <div class="glossary-card">
+        <div class="glossary-term">專迴</div>
+        <div class="glossary-def">獨立電力迴路，專供單一大功率設備使用，避免與其他設備共用導致過載或跳電。</div>
+      </div>
+      <div class="glossary-card">
+        <div class="glossary-term">甘特表</div>
+        <div class="glossary-def">工程進度管理工具，以橫條圖形式顯示各工項的起訖時間及執行狀態，用於追蹤工程進度。</div>
+      </div>
+      <div class="glossary-card">
+        <div class="glossary-term">輕鋼架天花板</div>
+        <div class="glossary-def">以金屬骨架搭配礦纖板組成的天花板系統，施工快速、成本較低，常見於商業空間。</div>
+      </div>
+      <div class="glossary-card">
+        <div class="glossary-term">壁癌</div>
+        <div class="glossary-def">牆壁因潮濕導致塗料剝落及白色結晶物出現，需先解決防水問題再修復牆面。</div>
+      </div>
+      <div class="glossary-card">
+        <div class="glossary-term">明管</div>
+        <div class="glossary-def">管路（水管、電線管）暴露在外、可見的配管方式，施工成本低，且維修方便，墨竹亭以明管為主。</div>
+      </div>
+      <div class="glossary-card">
+        <div class="glossary-term">排風罩</div>
+        <div class="glossary-def">設置在爐具上方，收集廚房油煙並導引至排風管道排出的設備，即油煙機/排油煙機。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== QUIZ ====== -->
+  <section class="section" id="quiz">
+    <div class="page-header">
+      <h2><div class="icon-circle">📝</div>知識測驗 — 工程部考核</h2>
+      <p>完成以下10題測驗，確認對墨竹亭工程部作業流程的掌握程度。</p>
+    </div>
+
+    <div id="quiz-score-display" style="display:none;" class="quiz-score">
+      <div class="score-num" id="score-num">0/10</div>
+      <p style="font-size:14px;color:var(--mist);margin-top:8px;" id="score-msg"></p>
+      <button class="quiz-btn" style="margin-top:16px;" onclick="resetQuiz()">重新測驗</button>
+    </div>
+
+    <div id="quiz-container">
+      <div class="quiz-card" id="q1">
+        <div class="quiz-q"><span class="q-num">1</span>墨竹亭工程部要求加盟店電力容量最低需達多少安培？</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQ(1, 'A', 'A')"><span class="opt-letter">A</span> 60A</div>
+          <div class="quiz-opt" onclick="answerQ(1, 'B', 'A')"><span class="opt-letter">B</span> 80A</div>
+          <div class="quiz-opt" onclick="answerQ(1, 'A', 'A')" id="q1-C" onclick="answerQ(1, 'C', 'C')"><span class="opt-letter">C</span> 100A</div>
+          <div class="quiz-opt" onclick="answerQ(1, 'D', 'C')"><span class="opt-letter">D</span> 150A</div>
+        </div>
+        <div class="quiz-feedback" id="q1-feedback"></div>
+      </div>
+
+      <div class="quiz-card" id="q2">
+        <div class="quiz-q"><span class="q-num">2</span>下列哪個設備需要「220V 專迴」獨立迴路？（可複選，但請選最完整的答案）</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQ(2, 'A', 'D')"><span class="opt-letter">A</span> 六口西餐爐</div>
+          <div class="quiz-opt" onclick="answerQ(2, 'B', 'D')"><span class="opt-letter">B</span> 澳柯瑪桌上型冰箱</div>
+          <div class="quiz-opt" onclick="answerQ(2, 'C', 'D')"><span class="opt-letter">C</span> 封口機</div>
+          <div class="quiz-opt" onclick="answerQ(2, 'D', 'D')"><span class="opt-letter">D</span> 2HP 中壓抽風馬達 和 20加侖開水機</div>
+        </div>
+        <div class="quiz-feedback" id="q2-feedback"></div>
+      </div>
+
+      <div class="quiz-card" id="q3">
+        <div class="quiz-q"><span class="q-num">3</span>廚房面寬不足 6 尺且兩側牆壁不可拆除時，廚房應設置在哪裡？</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQ(3, 'A', 'B')"><span class="opt-letter">A</span> 正中央</div>
+          <div class="quiz-opt" onclick="answerQ(3, 'B', 'B')"><span class="opt-letter">B</span> 後方</div>
+          <div class="quiz-opt" onclick="answerQ(3, 'C', 'B')"><span class="opt-letter">C</span> 左側</div>
+          <div class="quiz-opt" onclick="answerQ(3, 'D', 'B')"><span class="opt-letter">D</span> 不可開店</div>
+        </div>
+        <div class="quiz-feedback" id="q3-feedback"></div>
+      </div>
+
+      <div class="quiz-card" id="q4">
+        <div class="quiz-q"><span class="q-num">4</span>在工程期間，哪一個做法是正確的管路施工原則？</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQ(4, 'A', 'B')"><span class="opt-letter">A</span> 優先採用暗管（埋在牆內）</div>
+          <div class="quiz-opt" onclick="answerQ(4, 'B', 'B')"><span class="opt-letter">B</span> 以明管為主</div>
+          <div class="quiz-opt" onclick="answerQ(4, 'C', 'B')"><span class="opt-letter">C</span> 由加盟主自行決定</div>
+          <div class="quiz-opt" onclick="answerQ(4, 'D', 'B')"><span class="opt-letter">D</span> 不需要管路設計</div>
+        </div>
+        <div class="quiz-feedback" id="q4-feedback"></div>
+      </div>
+
+      <div class="quiz-card" id="q5">
+        <div class="quiz-q"><span class="q-num">5</span>墨竹亭工程部負責的廚區排風罩是幾米規格？</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQ(5, 'A', 'C')"><span class="opt-letter">A</span> 1.5 米</div>
+          <div class="quiz-opt" onclick="answerQ(5, 'B', 'C')"><span class="opt-letter">B</span> 2 米</div>
+          <div class="quiz-opt" onclick="answerQ(5, 'C', 'C')"><span class="opt-letter">C</span> 2.3 米</div>
+          <div class="quiz-opt" onclick="answerQ(5, 'D', 'C')"><span class="opt-letter">D</span> 3 米</div>
+        </div>
+        <div class="quiz-feedback" id="q5-feedback"></div>
+      </div>
+
+      <div class="quiz-card" id="q6">
+        <div class="quiz-q"><span class="q-num">6</span>以下哪一項是工程部在「施工前」階段「不需要」做的事？</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQ(6, 'A', 'D')"><span class="opt-letter">A</span> 商圈評估</div>
+          <div class="quiz-opt" onclick="answerQ(6, 'B', 'D')"><span class="opt-letter">B</span> 確認天花板是否漏水</div>
+          <div class="quiz-opt" onclick="answerQ(6, 'C', 'D')"><span class="opt-letter">C</span> 確認電力容量</div>
+          <div class="quiz-opt" onclick="answerQ(6, 'D', 'D')"><span class="opt-letter">D</span> 採購食材</div>
+        </div>
+        <div class="quiz-feedback" id="q6-feedback"></div>
+      </div>
+
+      <div class="quiz-card" id="q7">
+        <div class="quiz-q"><span class="q-num">7</span>設計圖（施工圖）由哪家公司負責出圖？</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQ(7, 'A', 'A')"><span class="opt-letter">A</span> 貳仁房</div>
+          <div class="quiz-opt" onclick="answerQ(7, 'B', 'A')"><span class="opt-letter">B</span> 墨比斯</div>
+          <div class="quiz-opt" onclick="answerQ(7, 'C', 'A')"><span class="opt-letter">C</span> 工程部自行繪製</div>
+          <div class="quiz-opt" onclick="answerQ(7, 'D', 'A')"><span class="opt-letter">D</span> 加盟主自行委託</div>
+        </div>
+        <div class="quiz-feedback" id="q7-feedback"></div>
+      </div>
+
+      <div class="quiz-card" id="q8">
+        <div class="quiz-q"><span class="q-num">8</span>廚區「截油槽」的主要功能是什麼？</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQ(8, 'A', 'B')"><span class="opt-letter">A</span> 儲存食用油</div>
+          <div class="quiz-opt" onclick="answerQ(8, 'B', 'B')"><span class="opt-letter">B</span> 將廚房廢水中的油脂分離，避免阻塞下水道</div>
+          <div class="quiz-opt" onclick="answerQ(8, 'C', 'B')"><span class="opt-letter">C</span> 過濾飲用水</div>
+          <div class="quiz-opt" onclick="answerQ(8, 'D', 'B')"><span class="opt-letter">D</span> 收集廚房油煙</div>
+        </div>
+        <div class="quiz-feedback" id="q8-feedback"></div>
+      </div>
+
+      <div class="quiz-card" id="q9">
+        <div class="quiz-q"><span class="q-num">9</span>以瑞光店為例，工程進度中「四門白鐵半凍藏冰箱」屬於哪個廚區分區？</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQ(9, 'A', 'D')"><span class="opt-letter">A</span> 爐檯區</div>
+          <div class="quiz-opt" onclick="answerQ(9, 'B', 'D')"><span class="opt-letter">B</span> 出餐檯</div>
+          <div class="quiz-opt" onclick="answerQ(9, 'C', 'D')"><span class="opt-letter">C</span> 水吧&洗滌區</div>
+          <div class="quiz-opt" onclick="answerQ(9, 'D', 'D')"><span class="opt-letter">D</span> 冷藏&備料區</div>
+        </div>
+        <div class="quiz-feedback" id="q9-feedback"></div>
+      </div>
+
+      <div class="quiz-card" id="q10">
+        <div class="quiz-q"><span class="q-num">10</span>加盟主要求不做壁癌處理以節省費用，工程部正確的處理方式是？</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQ(10, 'A', 'C')"><span class="opt-letter">A</span> 立刻答應，以客戶為主</div>
+          <div class="quiz-opt" onclick="answerQ(10, 'B', 'C')"><span class="opt-letter">B</span> 拒絕開工，壁癌必須處理</div>
+          <div class="quiz-opt" onclick="answerQ(10, 'C', 'C')"><span class="opt-letter">C</span> 說明危害和後果，書面記錄加盟主的決定</div>
+          <div class="quiz-opt" onclick="answerQ(10, 'D', 'C')"><span class="opt-letter">D</span> 自行處理但不收費</div>
+        </div>
+        <div class="quiz-feedback" id="q10-feedback"></div>
+      </div>
+
+      <div style="text-align:center; margin-top: 8px;">
+        <button class="quiz-btn" onclick="submitQuiz()">提交答案 查看成績</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // NAV
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // CHECKLIST
+  function toggleCheck(el) {
+    el.classList.toggle('checked');
+    el.querySelector('input').checked = el.classList.contains('checked');
+  }
+
+  // ACCORDION
+  function toggleAccordion(header) {
+    const body = header.nextElementSibling;
+    header.classList.toggle('open');
+    body.classList.toggle('open');
+  }
+
+  // QUIZ
+  const answers = {};
+  const correct = { 1:'C', 2:'D', 3:'B', 4:'B', 5:'C', 6:'D', 7:'A', 8:'B', 9:'D', 10:'C' };
+  const explanations = {
+    1: '電力容量必須達 100A 以上，這是墨竹亭廚區設備正常運作的基本需求。',
+    2: '2HP中壓抽風馬達（220V/6A）和20加侖開水機（220V/18A）都是大功率設備，需要獨立的220V專迴。',
+    3: '面寬不足且不可拆時，廚房只能設置在店面後方，需重新規劃出餐動線。',
+    4: '墨竹亭廚區管路以明管為主，施工成本低且維修方便。',
+    5: '標準廚區配置為「2米3排風罩」，需搭配2HP中壓抽風馬達使用。',
+    6: '採購食材是加盟主和營運部門的工作，不在工程部的職責範圍內。',
+    7: '室內空間施工圖由「貳仁房」負責出圖；平面廣告設計圖則由「墨比斯」負責。',
+    8: '截油槽負責將廚房廢水中的油脂分離，是廚房必備的排水設施，許多縣市有法規要求。',
+    9: '四門白鐵半凍藏冰箱和四門白鐵全藏冰箱都屬於「冷藏&備料區」。',
+    10: '正確做法是告知危害、書面記錄。既不能強制，也不能完全不管，需保留書面紀錄以免後期爭議。'
+  };
+
+  function answerQ(qNum, selected, correctAns) {
+    if (answers[qNum] !== undefined) return; // already answered
+    answers[qNum] = selected;
+    const card = document.getElementById('q' + qNum);
+    const opts = card.querySelectorAll('.quiz-opt');
+    const letters = ['A','B','C','D'];
+    opts.forEach((opt, i) => {
+      opt.classList.add('disabled');
+      opt.onclick = null;
+      if (letters[i] === correctAns) opt.classList.add('correct');
+      else if (letters[i] === selected && selected !== correctAns) opt.classList.add('wrong');
+    });
+    const fb = document.getElementById('q' + qNum + '-feedback');
+    fb.style.display = 'block';
+    if (selected === correctAns) {
+      fb.className = 'quiz-feedback feedback-correct';
+      fb.innerHTML = '✓ 正確！' + explanations[qNum];
+    } else {
+      fb.className = 'quiz-feedback feedback-wrong';
+      fb.innerHTML = '✗ 答案是 ' + correctAns + '。' + explanations[qNum];
+    }
+  }
+
+  function submitQuiz() {
+    let score = 0;
+    for (let i = 1; i <= 10; i++) {
+      if (answers[i] === correct[i]) score++;
+    }
+    document.getElementById('quiz-container').style.display = 'none';
+    const disp = document.getElementById('quiz-score-display');
+    disp.style.display = 'block';
+    document.getElementById('score-num').textContent = score + '/10';
+    const msg = score >= 8 ? '🎉 優秀！你已具備工程部基本知識。' : score >= 6 ? '📖 良好，請再複習錯誤的部分。' : '⚠️ 需要加強！請重新閱讀訓練材料後再測驗。';
+    document.getElementById('score-msg').textContent = msg;
+    disp.style.borderColor = score >= 8 ? 'var(--bamboo)' : score >= 6 ? 'var(--gold)' : 'var(--red-accent)';
+    document.getElementById('score-num').style.color = score >= 8 ? 'var(--bamboo)' : score >= 6 ? 'var(--gold)' : 'var(--red-accent)';
+  }
+
+  function resetQuiz() {
+    Object.keys(answers).forEach(k => delete answers[k]);
+    document.getElementById('quiz-score-display').style.display = 'none';
+    document.getElementById('quiz-container').style.display = 'block';
+    document.querySelectorAll('.quiz-opt').forEach(opt => {
+      opt.classList.remove('correct','wrong','disabled');
+    });
+    document.querySelectorAll('.quiz-feedback').forEach(fb => {
+      fb.style.display = 'none';
+    });
+    // Re-bind onclick
+    const qData = [
+      [1,'A','C'],[1,'B','C'],[1,'C','C'],[1,'D','C'],
+      [2,'A','D'],[2,'B','D'],[2,'C','D'],[2,'D','D'],
+      [3,'A','B'],[3,'B','B'],[3,'C','B'],[3,'D','B'],
+      [4,'A','B'],[4,'B','B'],[4,'C','B'],[4,'D','B'],
+      [5,'A','C'],[5,'B','C'],[5,'C','C'],[5,'D','C'],
+      [6,'A','D'],[6,'B','D'],[6,'C','D'],[6,'D','D'],
+      [7,'A','A'],[7,'B','A'],[7,'C','A'],[7,'D','A'],
+      [8,'A','B'],[8,'B','B'],[8,'C','B'],[8,'D','B'],
+      [9,'A','D'],[9,'B','D'],[9,'C','D'],[9,'D','D'],
+      [10,'A','C'],[10,'B','C'],[10,'C','C'],[10,'D','C']
+    ];
+    document.querySelectorAll('.quiz-opt').forEach((opt, i) => {
+      const [q, sel, ans] = qData[i];
+      opt.onclick = () => answerQ(q, sel, ans);
+    });
+  }
+</script>
+</body>
+</html>
