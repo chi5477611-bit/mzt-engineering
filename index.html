@@ -936,7 +936,13 @@ function renderSummary() {
   }
 
   let html = '';
-  STORES.forEach(s => {
+  // Include ALL store_ids in DB, even custom ones not in STORES list
+  const allStoreIds = Object.keys(byStore);
+  const storeList = [
+    ...STORES.filter(s => allStoreIds.includes(s.id)),
+    ...allStoreIds.filter(sid => !STORES.find(s=>s.id===sid)).map(sid => ({id:sid, name:sid.replace('CUSTOM_','').replace(/_/g,' ')}))
+  ];
+  storeList.forEach(s => {
     const st = byStore[s.id];
     if (!st) return;
     const done = st.filter(t=>t.done).length;
@@ -944,7 +950,7 @@ function renderSummary() {
     const pct = Math.round(done/total*100);
     const color = pct===100 ? 'var(--bamboo)' : pct>50 ? 'var(--gold)' : 'var(--red)';
 
-    html += `<div class="summary-store" id="ss-${s.id}">
+    html += `<div class="summary-store open" id="ss-${s.id}">
       <div class="summary-store-head" onclick="toggleSS('${s.id}')">
         <div class="ss-name">${s.name}</div>
         <div class="ss-pct" style="color:${color}">${pct}%</div>
@@ -956,11 +962,14 @@ function renderSummary() {
           <div class="prog-bar" style="height:4px;"><div class="prog-fill" style="width:${pct}%;background:${color}"></div></div>
         </div>`;
 
+    // Group by known cats first, then uncategorized
+    const knownCatTasks = new Set();
     CATS.forEach(cat => {
       const ct = st.filter(t=>t.cat===cat);
       if (!ct.length) return;
-      html += `<div style="padding:8px 14px 2px;font-size:10px;font-weight:700;color:var(--bamboo);letter-spacing:1px;">${EMOJI[cat]} ${cat}</div>`;
+      html += `<div style="padding:8px 14px 2px;font-size:10px;font-weight:700;color:var(--bamboo);letter-spacing:1px;">${EMOJI[cat]||'📌'} ${cat}</div>`;
       ct.forEach(t => {
+        knownCatTasks.add(t.id);
         html += `<div class="summary-item">
           <div class="si-dot ${t.done?'done':'pending'}"></div>
           <div class="si-info">
@@ -971,6 +980,21 @@ function renderSummary() {
         </div>`;
       });
     });
+    // Show tasks with other/unknown categories
+    const otherTasks = st.filter(t => !knownCatTasks.has(t.id));
+    if (otherTasks.length) {
+      html += `<div style="padding:8px 14px 2px;font-size:10px;font-weight:700;color:var(--bamboo);letter-spacing:1px;">📌 其他</div>`;
+      otherTasks.forEach(t => {
+        html += `<div class="summary-item">
+          <div class="si-dot ${t.done?'done':'pending'}"></div>
+          <div class="si-info">
+            <div class="si-name ${t.done?'done':''}">${esc(t.name)}</div>
+            <div class="si-sub">${t.cat ? esc(t.cat)+' ' : ''}${t.detail?esc(t.detail.slice(0,40))+(t.detail.length>40?'…':''):''} ${t.vendor?'｜🏢'+esc(t.vendor):''}</div>
+          </div>
+          <div class="si-date">${t.date?fmtDate(t.date):''}</div>
+        </div>`;
+      });
+    }
 
     html += `</div></div>`;
   });
